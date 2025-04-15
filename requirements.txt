@@ -1,5 +1,5 @@
 requests
-dateutil
+python-dateutil
 bs4
 curl_cffi
 discord-webhook
