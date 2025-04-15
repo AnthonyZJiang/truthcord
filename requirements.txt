@@ -1,8 +1,6 @@
 requests
 bs4
 curl_cffi
-tzdata
 discord-webhook
-python-dateutil
 python-dotenv
 git+https://github.com/AnthonyZJiang/quick-imgur-py.git
