@@ -115,7 +115,11 @@ def parse_html(html_content):
 
 class TruthBuilder:
     def __init__(self):
-        self.imgur = ImgurClient()
+        try:
+            self.imgur = ImgurClient()
+        except ValueError as e:
+            logger.debug(f"Imgur client not initialised: {e}")
+            self.imgur = None
         self.translation_enabled = TRANSLATE_FROM_LANGUAGE and TRANSLATE_TO_LANGUAGE
 
     def build_truth(self, truth: dict):
@@ -233,7 +237,9 @@ class TruthBuilder:
                 content_length = int(head_response.headers.get('Content-Length', 0))
                 
                 # If file is larger than 15MB, skip download
-                if content_length > 15 * 1024 * 1024:  # 15MB in bytes
+                if (self.imgur and content_length > 15 * 1024 * 1024) or (
+                    self.imgur is None and content_length > DISCORD_FILE_LIMIT
+                ):
                     inline_links.append(get_attachment_markup(attachment))
                     logger.debug(f"Attachment too large, skipped. File size: {content_length/1024/1024:.2f}MB")
                     continue
@@ -241,10 +247,10 @@ class TruthBuilder:
                 response = requests.get(file_url)
                 response.raise_for_status()
                 file_data = response.content
+                logger.info(f"Attachment downloaded. File size: {len(file_data)/1024/1024:.2f}MB")
 
                 imgur_url = None
-                logger.info(f"Attachment downloaded. File size: {len(file_data)/1024/1024:.2f}MB")
-                if len(file_data) > DISCORD_FILE_LIMIT:
+                if self.imgur and len(file_data) > DISCORD_FILE_LIMIT:
                     if attachment['type'] in ['image', 'video']:
                         imgur_url = self._upload_to_imgur(
                             file_data, attachment['type'])

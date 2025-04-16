@@ -11,7 +11,7 @@ from .utils import setup_logging
 
 load_dotenv()
 
-LOG_LEVEL = os.getenv('LOG_LEVEL')
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 TRUTH_USER = os.getenv('TRUTHSOCIAL_USER')
 DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL')
 TRUTHSOCIAL_RATE_LIMIT = int(os.getenv('TRUTHSOCIAL_RATE_LIMIT', 60))

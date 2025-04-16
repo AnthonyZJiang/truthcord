@@ -79,6 +79,10 @@ def setup_logging(level: str) -> None:
     logger.addHandler(handler)
 
 def azure_translate(payload: list[dict[str, str]], from_language: str=TRANSLATE_FROM_LANGUAGE, to_language: str=TRANSLATE_TO_LANGUAGE) -> dict[str, str]:
+    if not AZURE_TRANSLATOR_KEY or not AZURE_TRANSLATOR_LOCATION:
+        return {
+            'error': 'Azure Translator API details missing.'
+        }
     api_url = 'https://api.cognitive.microsofttranslator.com/translate'
 
     params = {
